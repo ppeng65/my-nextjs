@@ -1,0 +1,19 @@
+.loginBox {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+
+  .loginArea {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 20px;
+    width: 300px;
+    background-color: #fff;
+
+    .title {}
+  }
+}
