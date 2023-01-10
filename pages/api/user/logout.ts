@@ -1,18 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-// import { Cookie } from 'next-cookie';
+import { deleteCookie } from 'cookies-next';
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { ironOptions } from 'config/index';
 import { ISession } from '../index';
-// import { clearCookie } from 'utils/index';
+import { clearCookies } from 'utils/index';
 
 const Logout = async (req: NextApiRequest, res: NextApiResponse) => {
   const session: ISession = req.session;
-  // const cookie = Cookie.fromApiRoute(req, res);
 
   await session.destroy();
-  // console.log('cookie', Cookie);
-
-  // clearCookie(cookie);
+  const options = { req, res };
+  // deleteCookie('userId', options);
+  // deleteCookie('nickname', options);
+  // deleteCookie('avatar', options);
+  clearCookies(deleteCookie, options);
 
   res.status(200).json({
     code: 0,

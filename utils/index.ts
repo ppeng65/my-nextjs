@@ -1,3 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 interface ICookieInfo {
   userId: number;
   nickname: string;
@@ -7,44 +9,32 @@ interface ICookieInfo {
 /**
  * 设置 cookie
  * */
-export const setCookie = (
-  cookie: any,
-  { userId, nickname, avatar }: ICookieInfo
+export const setCookies = (
+  setCookie: any,
+  { userId, nickname, avatar }: ICookieInfo,
+  { req, res }: { req: NextApiRequest, res: NextApiResponse }
 ) => {
   const path = '/';
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const maxAge = 24 * 60 * 60;
+  const options = { req, res, path, maxAge };
 
-  cookie.set('userId', userId, {
-    path,
-    expires,
-  });
-  cookie.set('nickname', nickname, {
-    path,
-    expires,
-  });
-  cookie.set('avatar', avatar, {
-    path,
-    expires,
-  });
+  setCookie('userId', userId, options);
+  setCookie('nickname', nickname, options);
+  setCookie('avatar', avatar, options);
 };
 
 /**
  * 清除 cookie
  * */
-export const clearCookie = (cookie: any) => {
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+export const clearCookies = (
+  delCookies: any,
+  { req, res }: { req: NextApiRequest, res: NextApiResponse }
+) => {
   const path = '/';
+  const maxAge = 24 * 60 * 60;
+  const options = { req, res, path, maxAge };
 
-  cookie.set('userId', '', {
-    path,
-    expires,
-  });
-  cookie.set('nickname', '', {
-    path,
-    expires,
-  });
-  cookie.set('avatar', '', {
-    path,
-    expires,
-  });
+  delCookies('userId', options);
+  delCookies('nickname', options);
+  delCookies('avatar', options);
 };

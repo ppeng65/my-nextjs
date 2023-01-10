@@ -1,15 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
-// import { Cookie } from 'next-cookie';
+import { setCookie } from 'cookies-next';
 import { ironOptions } from 'config/index';
 import { ISession } from '../index';
 import { prepareConnection } from 'db/index';
 import { User, UserAuth } from 'db/entity/index';
-// import { setCookie } from 'utils/index';
+import { setCookies } from 'utils/index';
 
 const Login = async (req: NextApiRequest, res: NextApiResponse) => {
   const session: ISession = req.session;
-  // const cookie = Cookie.fromApiRoute(req, res);
   const { phone, verify, identity_type } = req.body;
   const db = await prepareConnection();
   // const userRepo = db.getRepository(User);
@@ -28,18 +27,21 @@ const Login = async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     if (userAuths) {
-      const { id, nickname, avatar } = userAuths.user;
-      session.userId = id;
+      const { id: userId, nickname, avatar } = userAuths.user;
+      session.userId = userId;
       session.nickname = nickname;
       session.avatar = avatar;
       await session.save();
 
-      // setCookie(cookie, { userId: id, nickname, avatar });
+      // setCookie('userId', id, cookieOptions);
+      // setCookie('nickname', nickname, cookieOptions);
+      // setCookie('avatar', avatar, cookieOptions);
+      setCookies(setCookie, { userId, nickname, avatar }, { req, res });
 
       res.status(200).json({
         code: 0,
         msg: '登录成功',
-        data: { userId: id, nickname, avatar },
+        data: { userId: userId, nickname, avatar },
       });
     } else {
       // 新用户
@@ -57,19 +59,19 @@ const Login = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const resUserAuth = await userAuthRepo.save(userAuth);
       const {
-        user: { id, nickname, avatar },
+        user: { id: userId, nickname, avatar },
       } = resUserAuth;
-      session.userId = id;
+      session.userId = userId;
       session.nickname = nickname;
       session.avatar = avatar;
       await session.save();
 
-      // setCookie(cookie, { userId: id, nickname, avatar });
+      setCookies(setCookie, { userId, nickname, avatar }, { req, res });
 
       res.status(200).json({
         code: 0,
         msg: '登录成功',
-        data: { userId: id, nickname, avatar },
+        data: { userId: userId, nickname, avatar },
       });
     }
   } else {
