@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Connection, getConnection, createConnection } from 'typeorm';
-import { User } from './entity';
+import { User, UserAuth } from './entity';
 
 const {
   DATABASE_HOST: host,
@@ -29,7 +29,7 @@ export const prepareConnection = () => {
         username,
         password,
         database,
-        entities: [User],
+        entities: [User, UserAuth],
         synchronize: false,
         logging: true,
       });

@@ -1,7 +1,11 @@
 import type { NextPage } from 'next';
 import { ChangeEvent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { message } from 'antd';
+import { useStore } from 'store/index';
 import CountDown from '../CountDown';
 import styles from './index.module.scss';
+import request from 'service/request';
 
 interface IProps {
   isShow: boolean;
@@ -9,6 +13,7 @@ interface IProps {
 }
 
 const Login: NextPage<IProps> = ({ isShow, onClose }) => {
+  const store = useStore();
   const [form, setForm] = useState({
     phone: '',
     verify: '',
@@ -37,14 +42,51 @@ const Login: NextPage<IProps> = ({ isShow, onClose }) => {
    * 获取验证码
    * */
   const onGetVerifyCode = () => {
-    setIsShowVerifyCode(true);
+    if (!form.phone) {
+      message.error('请输入手机号');
+      return;
+    }
+
+    request({
+      url: '/api/user/sendVerifyCode',
+      method: 'POST',
+      data: {
+        phone: form.phone,
+      },
+    }).then((res: any) => {
+      if (res.code === 0) {
+        setIsShowVerifyCode(true);
+      } else {
+        message.error(res?.msg || '未知错误');
+      }
+    });
   };
 
   /**
    * 登录
    * */
-  const onLogin = () => {};
+  const onLogin = () => {
+    request
+      .post('/api/user/login', {
+        ...form,
+        identity_type: 'phone',
+      })
+      .then((res: any) => {
+        if (res.code === 0) {
+          store.user.setUserInfo(res?.data);
+          onClose();
+        } else {
+          message.error(res.msg);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
+  /**
+   * Github 登录
+   * */
   const onOAuthGit = () => {};
 
   /**
@@ -103,4 +145,4 @@ const Login: NextPage<IProps> = ({ isShow, onClose }) => {
   ) : null;
 };
 
-export default Login;
+export default observer(Login);
