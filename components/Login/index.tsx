@@ -92,7 +92,13 @@ const Login: NextPage<IProps> = ({ isShow, onClose }) => {
   /**
    * Github 登录
    * */
-  const onOAuthGit = () => {};
+  const onOAuthGit = () => {
+    const clientId = 'c5587485ad219ea475c8';
+    const redirectUri = 'http://localhost:3000/api/oauth/redirect';
+    const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
+
+    window.open(url);
+  };
 
   /**
    * 关闭弹窗
